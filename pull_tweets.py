@@ -96,7 +96,7 @@ def main():
     vectorizer = TfidfVectorizer(stop_words='english')
     X = vectorizer.fit_transform(text)
 
-    true_k = 4
+    true_k = 20
     model = KMeans(n_clusters=true_k, init='k-means++', max_iter=100, n_init=1)
     model.fit(X)
 
@@ -108,6 +108,13 @@ def main():
         for ind in order_centroids[i, :10]:
             print(' %s' % terms[ind]),
         print
+
+    try_to_guess = text[:4]
+    for i in try_to_guess :
+        Y = vectorizer.transform([i])
+        prediction = model.predict(Y)
+        print(i)
+        print(prediction)
 
 
 if __name__ == '__main__':
