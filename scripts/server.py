@@ -16,7 +16,7 @@ def flask_app():
         # print("success")
         return 'server is up'
 
-    @app.route('/predict_price', methods=['POST'])
+    @app.route('/predict_cluster', methods=['POST'])
     def start():
         to_predict = request.json
 
