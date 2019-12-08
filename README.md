@@ -62,23 +62,25 @@ and run:
 Docker will use the included Dockerfile to build an image with the requirements specified in python_requirements.txt and serve the app on `localhost:5000`.
 
 In a separate terminal, we can then send POST requests to our application. For the purposes of this demonstration, we decided to keep things simple and we only have 2 specific options.
-1. **GET /** - 
-Description: Will return `server is up` to indicate server is running
+
+##### GET /
+**Description**: Will return `server is up` to indicate server is running
 Usage: `curl -X GET  http://localhost:5000`
-2. **POST /predict_cluster** - 
-Description: Will return a json object containing the sentences you that are being clustered and their predicted cluster.
 
-We created a sample `to_predict_json.json` which gives us an idea of the expected format of the input JSON file. Users can easily modify this file and add as many tweets as they want for a batch prediction.  
+##### POST /predict_cluster 
+**Description**: Will return a json object containing the sentences you that are being clustered and their predicted cluster.
 
-Usage: `curl -X POST -H "Content-Type: application/json" -d @to_predict_json.json http://localhost:5000/predict_cluster` (Note that this has to be run from the project directory which contains `to_predict_json.json`.)  
+We created a sample `to_predict_json.json` which gives us an idea of the expected format of the input JSON file. Users can easily modify this file and add as many tweets as they want for a batch prediction.
+
+**Usage**: `curl -X POST -H "Content-Type: application/json" -d @to_predict_json.json http://localhost:5000/predict_cluster` (Note that this has to be run from the project directory which contains `to_predict_json.json`.)  
 Expected Output: 
 
-3. **GET /get_cluster_titles**
+##### GET /get_cluster_titles
 
-Description: Will return the titles of the cluster of preset model. For the project, the model is set to one that we generated and include in the `/models` folder. 
+**Description**: Will return the titles of the cluster of preset model. For the project, the model is set to one that we generated and include in the `/models` folder. 
 
-Usage: `curl -X GET  http://localhost:5000/get_cluster_titles`
-Expected Output For Project: 
+**Usage**: `curl -X GET  http://localhost:5000/get_cluster_titles`
+**Expected Output For Project**: 
 ```
 {
   "Cluster Titles": {
@@ -93,18 +95,19 @@ Expected Output For Project:
   }
 }
 ```
-4. **GET /get_cluster_features**
-Description: Will return a list of features for each cluster of preset model. For the project, the model is set to one that we generated and include in the `/models` folder. 
 
-Usage: `curl -X GET  http://localhost:5000/get_cluster_features`
+##### GET /get_cluster_features
+**Description**: Will return a list of features for each cluster of preset model. For the project, the model is set to one that we generated and include in the `/models` folder. 
+
+**Usage**: `curl -X GET  http://localhost:5000/get_cluster_features`
 Expected Output
 ```
 __NEED TO FILL OUT__
 ```
-5. **POST /label_clusters**
-Description: Use this endpoint to set titles for each of the clusters that are used. 
+##### POST /label_clusters
+**Description**: Use this endpoint to set titles for each of the clusters that are used. 
 
-Usage:
+**Usage**:
 
 ```
 curl -X POST -H "Content-Type: application/json" -d '{"Cluster 0": "Gun Control","Cluster 1": "Candidates","Cluster 2": "Human Rights","Cluster 3": "Health Care","Cluster 4": "Presidential Campaign","Cluster 5": "Trump","Cluster 6": "Wages","Cluster 7": "Climate Change"}' http://localhost:5000/label_clusters
