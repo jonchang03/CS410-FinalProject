@@ -5,12 +5,7 @@ The topic that we had originally proposed did not end up coming to fruition. As 
 
 We moved on to a stronger use case, involving democratic candidate tweets. One of Twitter's main objectives right now is preventing fake information, specifically about the candidates, from being posted on the platform. To go along with that trend, we thought it would be important for Twitter users to be able to figure out what political issue a candidate's tweet is relating to (i.e. climate change, student debt, etc...). Therefore, we decided to use clustering to determine the topics that were being talked about by the candidates in their tweets.
 
-After analysis of the clusters, we were able to label them with broad categories every candidate has a stance on. These are:
-    * Healthcare
-    * Student Debt 
-    * Trump
-    * NEED TO FILL IN
-
+After analysis of the clusters, we were able to label them with broad categories every candidate has a stance on (e.g. healthcare, student debt, gun control, etc...). 
 
 One possible user of our tool could be Twitter itself, in order to learn as much information about political Tweets as possible.
 
