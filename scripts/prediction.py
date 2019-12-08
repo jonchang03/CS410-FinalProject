@@ -13,6 +13,11 @@ vectorizer_path = 'models/final_vectorizer.pickle'
 loaded_model = pickle.load(open(model_path, 'rb'))
 vectorizer = pickle.load(open(vectorizer_path, 'rb'))
 
+
+with open('models/cluster_labels.json', 'r') as json_file:
+    cluster_labels = json.load(json_file)
+labels_dict = cluster_labels['cluster_titles']
+
 def clean_tweet(tweet):
     '''
     Cleans tweet text by removing links,
@@ -42,11 +47,11 @@ def make_prediction(input_json, model=loaded_model):
     for i in range(0, len(predictions_list)) :
         curr_predict = {}
         curr_predict['text'] = tweets_text[i]
-        curr_predict['cluster'] = predictions_list[i]
+        curr_predict['cluster'] = labels_dict.get("Cluster {}".format(predictions_list[i]))
         final_list.append(curr_predict)
     
     final_predictions['predictions'] = final_list
-    return (final_predictions) # can maybe map to dictionary
+    return (final_predictions) 
 
 def return_features(model=loaded_model, k=8):
     order_centroids = model.cluster_centers_.argsort()[:, ::-1]

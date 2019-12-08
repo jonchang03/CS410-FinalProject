@@ -53,29 +53,33 @@ Below is an overview of our project files. The `data` directory contains the JSO
 ```
 
 ## How to Use
-Note: For this tutorial, we assume that the user has Docker installed. For more information, please refer to the [Docker Docs](https://docs.docker.com/engine/reference/commandline/docker/).
+**Note: For this tutorial, we assume that the user has Docker installed. For more information, please refer to the [Docker Docs](https://docs.docker.com/engine/reference/commandline/docker/).**
 
+### Step 1. Get Flask Server Running
 Simply navigate to the docker folder:  
 `cd docker`  
 and run:  
 `docker-compose up`  
 Docker will use the included Dockerfile to build an image with the requirements specified in python_requirements.txt and serve the app on `localhost:5000`.
 
-In a separate terminal, we can then send POST requests to our application. For the purposes of this demonstration, we decided to keep things simple and we only have 2 specific options.
+### Step 2. Send HTTP Requests
+In a separate terminal, we can then send GET and POST requests to our application. 
 
-##### GET /
+#### 1. GET /
 **Description**: Will return `server is up` to indicate server is running
 Usage: `curl -X GET  http://localhost:5000`
 
-##### POST /predict_cluster 
+#### 2. POST /predict_cluster 
 **Description**: Will return a json object containing the sentences you that are being clustered and their predicted cluster.
 
 We created a sample `to_predict_json.json` which gives us an idea of the expected format of the input JSON file. Users can easily modify this file and add as many tweets as they want for a batch prediction.
 
-**Usage**: `curl -X POST -H "Content-Type: application/json" -d @to_predict_json.json http://localhost:5000/predict_cluster` (Note that this has to be run from the project directory which contains `to_predict_json.json`.)  
+**Usage**: `curl -X POST -H "Content-Type: application/json" -d @to_predict_json.json http://localhost:5000/predict_cluster` 
+
+(Note that this has to be run from the project directory which contains `to_predict_json.json`.)  
 Expected Output: 
 
-##### GET /get_cluster_titles
+#### 3. GET /get_cluster_titles
 
 **Description**: Will return the titles of the cluster of preset model. For the project, the model is set to one that we generated and include in the `/models` folder. 
 
@@ -96,24 +100,69 @@ Expected Output:
 }
 ```
 
-##### GET /get_cluster_features
+#### 4. GET /get_cluster_features
 **Description**: Will return a list of features for each cluster of preset model. For the project, the model is set to one that we generated and include in the `/models` folder. 
 
-**Usage**: `curl -X GET  http://localhost:5000/get_cluster_features`
-Expected Output
+**Usage**: `curl -X GET  http://localhost:5000/get_cluster_features`  
+**Output** (*truncated for documentation purposes*):
 ```
-__NEED TO FILL OUT__
+{
+  "Cluster Features": {
+    "Cluster 0:": [
+      "care",
+      "health",
+      "access",
+      "affordable",
+      "https",
+      "right",
+      "plan",
+      "medicare",
+      "medicareforall",
+      "need"
+    ],
+        .
+        .
+        .
+    "Cluster 7:": [
+      "women",
+      "class",
+      "middle",
+      "pay",
+      "https",
+      "tax",
+      "work",
+      "time",
+      "teachers",
+      "equal"
+    ]
+  }
+}
 ```
-##### POST /label_clusters
+#### 5. POST /label_clusters
 **Description**: Use this endpoint to set titles for each of the clusters that are used. 
 
 **Usage**:
 
 ```
-curl -X POST -H "Content-Type: application/json" -d '{"Cluster 0": "Gun Control","Cluster 1": "Candidates","Cluster 2": "Human Rights","Cluster 3": "Health Care","Cluster 4": "Presidential Campaign","Cluster 5": "Trump","Cluster 6": "Wages","Cluster 7": "Climate Change"}' http://localhost:5000/label_clusters
+curl -X POST -H "Content-Type: application/json" -d '{"Cluster 0": "Health Care", "Cluster 1": "Gun Control & Trump Administration", "Cluster 2": "Education & Student Debt", "Cluster 3": "Democratic Candidates", "Cluster 4": "Workers Rights & Equality", "Cluster 5": "Electoral Issues", "Cluster 6": "Climate Change", "Cluster 7": "Middle Class & Equal Pay "}' http://localhost:5000/label_clusters
 ```
 
-The first HTTP request just checks that our server is up and running, and the second POST request allows us to actually send some JSON examples and receive predictions. 
+**Result**: `models/cluster_labels.json` will now look like:
+```
+{
+    "model_name": "final_model",
+    "cluster_titles": {
+        "Cluster 3": "Democratic Candidates",
+        "Cluster 0": "Health Care",
+        "Cluster 6": "Climate Change",
+        "Cluster 7": "Middle Class & Equal Pay ",
+        "Cluster 1": "Gun Control & Trump Administration",
+        "Cluster 2": "Education & Student Debt",
+        "Cluster 5": "Electoral Issues",
+        "Cluster 4": "Workers Rights & Equality"
+    }
+}
+```
 
 
 ## Contributions 
