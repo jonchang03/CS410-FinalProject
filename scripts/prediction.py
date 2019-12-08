@@ -31,9 +31,32 @@ def make_prediction(input_json, model=loaded_model):
         tweets_text.append(clean_text)
         
     predictions_list = []
+    final_predictions = {}
+    final_list = []
     for t in tweets_text:
         tweet = vectorizer.transform([t])
         pred_cluster = int(model.predict(tweet)[0])
         predictions_list.append(pred_cluster)
         print("Predicted_Cluster: {}".format(pred_cluster))
-    return (predictions_list) # can maybe map to dictionary
+
+    for i in range(0, len(predictions_list)) :
+        curr_predict = {}
+        curr_predict['text'] = tweets_text[i]
+        curr_predict['cluster'] = predictions_list[i]
+        final_list.append(curr_predict)
+    
+    final_predictions['predictions'] = final_list
+    return (final_predictions) # can maybe map to dictionary
+
+def return_features(model=loaded_model, k=8):
+    order_centroids = model.cluster_centers_.argsort()[:, ::-1]
+    terms = vectorizer.get_feature_names()
+
+    features = {}
+    for i in range(k):
+        print("Cluster %d:" % i),
+        term_list = []
+        for ind in order_centroids[i, :10]:
+            term_list.append(terms[ind])
+        features["Cluster %d:" % i] = term_list
+    return features
