@@ -14,10 +14,6 @@ loaded_model = pickle.load(open(model_path, 'rb'))
 vectorizer = pickle.load(open(vectorizer_path, 'rb'))
 
 
-with open('models/cluster_labels.json', 'r') as json_file:
-    cluster_labels = json.load(json_file)
-labels_dict = cluster_labels['cluster_titles']
-
 def clean_tweet(tweet):
     '''
     Cleans tweet text by removing links,
@@ -44,6 +40,10 @@ def make_prediction(input_json, model=loaded_model):
         predictions_list.append(pred_cluster)
         print("Predicted_Cluster: {}".format(pred_cluster))
 
+
+    with open('models/cluster_labels.json', 'r') as json_file:
+        cluster_labels = json.load(json_file)
+    labels_dict = cluster_labels['cluster_titles']
     for i in range(0, len(predictions_list)) :
         curr_predict = {}
         curr_predict['text'] = tweets_text[i]
