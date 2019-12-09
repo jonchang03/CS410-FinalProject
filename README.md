@@ -5,7 +5,12 @@ The topic that we had originally proposed did not end up coming to fruition. As 
 
 We moved on to a stronger use case, involving democratic candidate tweets. One of Twitter's main objectives right now is preventing fake information, specifically about the candidates, from being posted on the platform. To go along with that trend, we thought it would be important for Twitter users to be able to figure out what political issue a candidate's tweet is relating to (i.e. climate change, student debt, etc...). Therefore, we decided to use clustering to determine the topics that were being talked about by the candidates in their tweets.
 
-After analysis of the clusters, we were able to label them with broad categories every candidate has a stance on (e.g. healthcare, student debt, gun control, etc...). 
+After analysis of the clusters, we were able to label them with broad categories every candidate has a stance on. These are:
+    * Healthcare
+    * Student Debt 
+    * Trump
+    * NEED TO FILL IN
+
 
 One possible user of our tool could be Twitter itself, in order to learn as much information about political Tweets as possible.
 
@@ -46,35 +51,109 @@ Below is an overview of our project files. The `data` directory contains the JSO
 │   └── start_flask.sh
 └── to_predict_json.json
 ```
-
-## How to Use
+## Quickstart (see section below for detailed instructions)
 **Note: For this tutorial, we assume that the user has Docker installed. For more information, please refer to the [Docker Docs](https://docs.docker.com/engine/reference/commandline/docker/).**
 
-### Step 1. Get Flask Server Running
-Simply navigate to the docker folder:  
+1. FIrst, let's get our Flask server up and running. Simply navigate to the docker folder:  
 `cd docker`  
 and run:  
 `docker-compose up`  
 Docker will use the included Dockerfile to build an image with the requirements specified in python_requirements.txt and serve the app on `localhost:5000`.
 
-### Step 2. Send HTTP Requests
-In a separate terminal, we can then send GET and POST requests to our application. 
+2. Now, we can run some HTTP requests. First, let's look at the current cluster titles. We use a config file called `cluster_labels.json` in our `models` directory to keep track of our labels. By default, they are empty, and we have included a way for the user to determine cluster titles!
+```
+$ curl -X GET  http://localhost:5000/get_cluster_titles
+{
+  "Cluster Titles": {
+    "Cluster 0": "Cluster 0",
+    "Cluster 1": "Cluster 1",
+    "Cluster 2": "Cluster 2",
+    "Cluster 3": "Cluster 3",
+    "Cluster 4": "Cluster 4",
+    "Cluster 5": "Cluster 5",
+    "Cluster 6": "Cluster 6",
+    "Cluster 7": "Cluster 7"
+  }
+}
+```
+3. Let's look at the top terms in each cluster to help us determine appropriate titles for each cluster. Our model contains 8 clusters total, and we can see from the sample output that the first cluster seems to be about healthcare and the second one about gun control and the Trump Administration. 
+```
+$ curl -X GET  http://localhost:5000/get_cluster_features
+{
+  "Cluster Features": {
+    "Cluster 0:": [
+      "care",
+      "health",
+      "access",
+      "affordable",
+      "https",
+      "right",
+      "plan",
+      "medicare",
+      "medicareforall",
+      "need"
+    ],
+    "Cluster 1:": [
+      "trump",
+      "president",
+      "gun",
+      "donald",
+      "https",
+      "violence",
+      "administration",
+      "congress",
+      "end",
+      "need"
+    ],
+    .
+    .
+    . 
+``` 
+4. So let's go ahead and label our clusters. Based on our observations of the top terms in each cluster, we come up with labels and pass a json file with cluster names as shown below. We also run our get_cluster_titles again and see that indeed, the cluster titles have changed!
+```
+$ curl -X POST -H "Content-Type: application/json" -d '{"Cluster 0": "Health Care", "Cluster 1": "Gun Control & Trump Administration", "Cluster 2": "Education & Student Debt", "Cluster 3": "Democratic Candidates", "Cluster 4": "Workers Rights & Equality", "Cluster 5": "Electoral Issues", "Cluster 6": "Climate Change", "Cluster 7": "Middle Class & Equal Pay "}' http://localhost:5000/label_clusters
+
+$ curl -X GET  http://localhost:5000/get_cluster_titles
+{ 
+  "Cluster Titles": {
+    "Cluster 0": "Health Care",
+    "Cluster 1": "Gun Control & Trump Administration",
+    "Cluster 2": "Education & Student Debt",
+    "Cluster 3": "Democratic Candidates",
+    "Cluster 4": "Workers Rights & Equality",
+    "Cluster 5": "Electoral Issues",
+    "Cluster 6": "Climate Change",
+    "Cluster 7": "Middle Class & Equal Pay "
+  }
+}
+```
+
+5. Finally, let's make some predictions. We run our predict_cluster command with a JSON-formatted tweet, and see that our model predicts that it is about *Democratic Candidates*, which does indeed seem to be the case.
+```
+$ curl -X POST -H "Content-Type: application/json" -d '{"0": {"text": "RT @pujanpatel_: Bernie is one of the only presidential candidates that cares about my voice, and the collective voice of the working class"}}' http://localhost:5000/predict_cluster
+{
+  "Predicted Clusters": {
+    "predictions": [
+      {
+        "cluster": "Democratic Candidates",
+        "text": "RT @pujanpatel_: Bernie is one of the only presidential candidates that cares about my voice, and the collective voice of the working class"
+      }
+    ]
+  }
+}
+```
+
+
+## API Documentation
+
+### Send HTTP Requests
+Assuming our Flask server is running, in a separate terminal, we can then send GET and POST requests to our application. 
 
 #### 1. GET /
 **Description**: Will return `server is up` to indicate server is running
 Usage: `curl -X GET  http://localhost:5000`
 
-#### 2. POST /predict_cluster 
-**Description**: Will return a json object containing the sentences you that are being clustered and their predicted cluster.
-
-We created a sample `to_predict_json.json` which gives us an idea of the expected format of the input JSON file. Users can easily modify this file and add as many tweets as they want for a batch prediction.
-
-**Usage**: `curl -X POST -H "Content-Type: application/json" -d @to_predict_json.json http://localhost:5000/predict_cluster` 
-
-(Note that this has to be run from the project directory which contains `to_predict_json.json`.)  
-Expected Output: 
-
-#### 3. GET /get_cluster_titles
+#### 2. GET /get_cluster_titles
 
 **Description**: Will return the titles of the cluster of preset model. For the project, the model is set to one that we generated and include in the `/models` folder. 
 
@@ -95,7 +174,7 @@ Expected Output:
 }
 ```
 
-#### 4. GET /get_cluster_features
+#### 3. GET /get_cluster_features
 **Description**: Will return a list of features for each cluster of preset model. For the project, the model is set to one that we generated and include in the `/models` folder. 
 
 **Usage**: `curl -X GET  http://localhost:5000/get_cluster_features`  
@@ -133,7 +212,7 @@ Expected Output:
   }
 }
 ```
-#### 5. POST /label_clusters
+#### 4. POST /label_clusters
 **Description**: Use this endpoint to set titles for each of the clusters that are used. 
 
 **Usage**:
@@ -157,6 +236,34 @@ curl -X POST -H "Content-Type: application/json" -d '{"Cluster 0": "Health Care"
         "Cluster 4": "Workers Rights & Equality"
     }
 }
+```
+
+#### 5. POST /predict_cluster 
+**Description**: Will return a json object containing the sentences you that are being clustered and their predicted cluster.
+
+We created a sample `to_predict_json.json` which gives us an idea of the expected format of the input JSON file. Users can easily modify this file and add as many tweets as they want for a batch prediction.
+
+**Usage**: `curl -X POST -H "Content-Type: application/json" -d @to_predict_json.json http://localhost:5000/predict_cluster` 
+
+Note that this has to be run from the project directory which contains `to_predict_json.json`. This JSON file includes some sample tweets we pulled using our functions in our `pull_tweets.py` script.  
+
+**Sample Output** (*truncated for documentation purposes*):
+We see that we have the tweets and the predicted clusters they have been assigned to.
+```
+{
+  "Predicted Clusters": {
+    "predictions": [
+      {
+        "cluster": "Health Care",
+        "text": "Many people are responding that they can't afford to get dental care. This is a major reason we need Medicare for All. Dental care is health care and Medicare for All covers it. https://t.co/OyfhL8mvek"
+      },
+      {
+        "cluster": "Climate Change",
+        "text": "Thousands of family farmers are forced off their land every year by big agribusinesses. It\u2019s time the government had the backs of family farmers instead of doing favors for corporate agriculture monopolies. https://t.co/ooyAU1ORva"
+      }
+      .
+      .
+      .
 ```
 
 
