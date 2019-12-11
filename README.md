@@ -261,6 +261,8 @@ We see that we have the tweets and the predicted clusters they have been assigne
       .
 ```
 
+## Getting Twitter Credentials (not necessary for testing)
+It isn't necessary get create twitter credentials to test our project. There are some sections in our jupyter notebook and python scripts that can assist with pulling data, if needed. Instructions for creating the credentials can be found [here](https://towardsdatascience.com/how-to-access-twitters-api-using-tweepy-5a13a206683b)
 
 ## Contributions 
 

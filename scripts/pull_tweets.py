@@ -41,10 +41,10 @@ def get_tweets(handle='JoeBiden') :
     The output is a JSON file of the tweets and timestamp. 
     For the purposes of this project, we have hardcoded a date of 05/01/19.
     """
-    consumer_key = '7KEQmTV6fhm0mnmsyO9XNKPpx'
-    consumer_secret = 'bevlcE2PiQAu0bMgSsBj1QrpOVdC3KGVyNvwu8A1rnlozLIUlq'
-    access_token = '139221007-Oxzs1aPNr0pQefpVd5jeDfogKC9CktkiGityJGSJ'
-    access_token_secret = '6EN5WAOCWH7E6avW9uomIvRYwQZfFxnBJS1yKCj3qJYRx'
+    consumer_key = <consumer_key>
+    consumer_secret = <consumer_secret>
+    access_token = <access_token>
+    access_token_secret = <access_token_secret>
 
     counter = 0
     final_dict = {}
